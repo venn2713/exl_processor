@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка файла</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; color: #000; transition: background-color 0.3s, color 0.3s; }
+        .container { width: 100%; max-width: 600px; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 10px; background: #fff; text-align: center; }
+        .dropzone { border: 2px dashed #007bff; border-radius: 10px; padding: 30px; cursor: pointer; color: #007bff; transition: background 0.3s; }
+        .dropzone.dragover { background: rgba(0, 123, 255, 0.1); }
+        .dropzone p { margin: 0; font-size: 16px; }
+        .hidden { display: none; }
+        #download-link { display: none; margin-top: 20px; }
+        @media (prefers-color-scheme: dark) {
+            body { background-color: #121212; color: #e0e0e0; }
+            .container { background: #1e1e1e; box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1); }
+            .dropzone { border-color: #00aaff; color: #00aaff; }
+            .dropzone.dragover { background: rgba(0, 170, 255, 0.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="dropzone" class="dropzone">
+            <p>Перетащите файл сюда или кликните для выбора</p>
+            <input id="file-input" type="file" class="hidden">
+        </div>
+        <div id="progress" class="hidden">
+            <p>Обработка файла, пожалуйста, подождите...</p>
+        </div>
+        <a id="download-link" href="#" download="report.xlsx">Скачать отчет</a>
+    </div>
+    <script>
+        const dropzone = document.getElementById("dropzone");
+        const fileInput = document.getElementById("file-input");
+        const progress = document.getElementById("progress");
+        const downloadLink = document.getElementById("download-link");
+        dropzone.addEventListener("click", () => fileInput.click());
+        fileInput.addEventListener("change", () => { const file = fileInput.files[0]; if (file) uploadFile(file); });
+        dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("dragover"); });
+        dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+        dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.classList.remove("dragover"); const file = e.dataTransfer.files[0]; if (file) uploadFile(file); });
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append("file", file);
+            progress.classList.remove("hidden");
+            downloadLink.style.display = "none";
+            fetch("/", { method: "POST", body: formData, headers: { "X-CSRFToken": getCookie("csrftoken") } })
+                .then(response => { if (!response.ok) throw new Error("Ошибка обработки файла"); return response.blob(); })
+                .then(blob => { const url = window.URL.createObjectURL(blob); downloadLink.href = url; downloadLink.style.display = "block"; progress.classList.add("hidden"); })
+                .catch(error => { alert(error.message); progress.classList.add("hidden"); })
+                .finally(() => fileInput.value = "");
+        }
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
