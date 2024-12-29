@@ -26,12 +26,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Set up environment variables
-        run: |
-          echo "DEBUG=False" >> .env
-          echo "ENVIRONMENT=testing" >> .env
-
       - name: Run tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
         run: |
           python manage.py test
 
@@ -51,10 +49,10 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/django-app:${{ github.sha }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/django-app:${{ github.sha }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/exl-processor:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/exl-processor:${{ github.sha }}
 
       - name: Tag as latest
         run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/django-app:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/django-app:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/django-app:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/exl-processor:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/exl-processor:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/exl-processor:latest
