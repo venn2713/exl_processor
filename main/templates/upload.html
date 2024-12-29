@@ -12,11 +12,15 @@
         .dropzone p { margin: 0; font-size: 16px; }
         .hidden { display: none; }
         #download-link { display: none; margin-top: 20px; }
+        .button { display: inline-block; padding: 10px 20px; font-size: 16px; font-weight: bold; text-decoration: none; color: #fff; background-color: #007bff; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s, transform 0.2s; }
+        .button:hover { background-color: #0056b3; transform: scale(1.05); }
         @media (prefers-color-scheme: dark) {
             body { background-color: #121212; color: #e0e0e0; }
             .container { background: #1e1e1e; box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1); }
             .dropzone { border-color: #00aaff; color: #00aaff; }
             .dropzone.dragover { background: rgba(0, 170, 255, 0.2); }
+            .button { background-color: #00aaff; color: #121212; }
+            .button:hover { background-color: #0088cc; }
         }
     </style>
 </head>
@@ -29,7 +33,7 @@
         <div id="progress" class="hidden">
             <p>Обработка файла, пожалуйста, подождите...</p>
         </div>
-        <a id="download-link" href="#" download="report.xlsx">Скачать отчет</a>
+        <a id="download-link" href="#" download="report.xlsx" class="button">Скачать отчет</a>
     </div>
     <script>
         const dropzone = document.getElementById("dropzone");
