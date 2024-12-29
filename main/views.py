@@ -49,7 +49,7 @@ class FileUploadView(View):
             )
 
         except Exception as e:
-            logger.error(f"Ошибка обработки файла: {str(e)}", exc_info=True)
+            logger.error(f"Ошибка обработки файла: {str(e)}", exc_info=False)
             return HttpResponse(f"Ошибка обработки: {str(e)}", status=500)
 
         finally:

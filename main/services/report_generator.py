@@ -19,6 +19,9 @@ def calculate_tax(base: float) -> float:
 
 def generate_report(data: pd.DataFrame) -> str:
     logger.info("Начало генерации отчета")
+    if data.empty:
+        raise ValueError("Переданы пустые данные. Невозможно создать отчет.")
+
     try:
         data["Исчислено всего по формуле"] = data["Налоговая база"].apply(calculate_tax)
         logger.info("Добавлены расчеты налогов в DataFrame")
@@ -96,5 +99,5 @@ def generate_report(data: pd.DataFrame) -> str:
         logger.info(f"Отчет успешно сохранен: {file_path}")
         return file_path
     except Exception:
-        logger.error("Ошибка генерации отчета", exc_info=True)
+        logger.error("Ошибка генерации отчета", exc_info=False)
         raise
